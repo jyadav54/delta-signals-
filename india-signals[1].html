@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#030712">
-<title>Delta Signals — Live Trading</title>
+<title>India Signals — Live Trading</title>
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -14,7 +14,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-ser
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% -20%,rgba(16,185,129,.05),transparent);pointer-events:none;z-index:0}
 .hdr{position:sticky;top:0;z-index:200;background:rgba(3,7,18,.97);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
 .hdr-logo{display:flex;align-items:center;gap:8px}
-.hdr-icon{width:34px;height:34px;background:linear-gradient(135deg,#f59e0b,#10b981);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.hdr-icon{width:34px;height:34px;background:linear-gradient(135deg,#ff9933,#138808);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .hdr-title{font-size:15px;font-weight:700;letter-spacing:2px}
 .hdr-sub{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px}
 .hdr-right{display:flex;align-items:center;gap:8px}
@@ -129,15 +129,19 @@ canvas{display:block}
 <body>
 <div class="hdr">
   <div class="hdr-logo">
-    <div class="hdr-icon">⚡</div>
-    <div><div class="hdr-title">DELTA SIGNALS</div><div class="hdr-sub">DELTA EXCHANGE INDIA</div></div>
+    <div class="hdr-icon">🇮🇳</div>
+    <div><div class="hdr-title">INDIA SIGNALS</div><div class="hdr-sub">NSE · BSE · MCX LIVE</div></div>
   </div>
   <div class="hdr-right"><div class="pulse"></div><div class="live-txt">LIVE</div><div class="clock" id="clockEl">--:--:--</div></div>
 </div>
 <div class="tabs" id="tabsEl"></div>
 <div class="tf-bar" id="tfBar"></div>
 <div class="main">
-  <div class="status" id="statusBar">CONNECTING TO DELTA EXCHANGE...</div>
+  <div class="status" id="statusBar">CONNECTING TO NSE/BSE/MCX...</div>
+  <div id="mktClosed" style="display:none;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:12px;margin-bottom:12px;text-align:center">
+    <div style="font-size:12px;font-weight:700;color:var(--amber);font-family:'JetBrains Mono',monospace;letter-spacing:1px">⏰ MARKET CLOSED</div>
+    <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:4px">NSE/BSE: 9:15 AM–3:30 PM IST · MCX: 9:00 AM–11:30 PM IST</div>
+  </div>
   <div class="sig-card hold" id="sigCard">
     <div class="sig-top">
       <div><div class="sig-sym" id="sigSym">BTCUSD</div><div class="sig-act" id="sigAct">HOLD</div><div class="sig-price" id="sigPrice">---</div><div class="sig-chg flat" id="sigChg">---</div></div>
@@ -151,7 +155,7 @@ canvas{display:block}
       <div class="ind-box n"><div class="ind-ico">📊</div><div class="ind-nm">RSI(14)</div><div class="ind-vl" id="i-rsi">--</div><div class="ind-sg" id="is-rsi" style="color:var(--muted)">--</div></div>
       <div class="ind-box n"><div class="ind-ico">🔥</div><div class="ind-nm">MACD</div><div class="ind-vl" id="i-macd">--</div><div class="ind-sg" id="is-macd" style="color:var(--muted)">--</div></div>
       <div class="ind-box n"><div class="ind-ico">📉</div><div class="ind-nm">BOLLINGER</div><div class="ind-vl" id="i-bb">--</div><div class="ind-sg" id="is-bb" style="color:var(--muted)">--</div></div>
-      <div class="ind-box n"><div class="ind-ico">⚡</div><div class="ind-nm">MOMENTUM</div><div class="ind-vl" id="i-mom">--</div><div class="ind-sg" id="is-mom" style="color:var(--muted)">--</div></div>
+      <div class="ind-box n"><div class="ind-ico">🇮🇳</div><div class="ind-nm">MOMENTUM</div><div class="ind-vl" id="i-mom">--</div><div class="ind-sg" id="is-mom" style="color:var(--muted)">--</div></div>
     </div>
   </div>
   <div class="trade-panel" id="tradePanel">
@@ -225,7 +229,7 @@ canvas{display:block}
     <div class="chart-hdr"><div class="chart-ttl">SIGNAL HISTORY</div><div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace" id="histCount">0 signals</div></div>
     <div id="histList"><div class="loading"><div class="spin"></div>WAITING FOR SIGNALS...</div></div>
   </div>
-  <div class="disc">WARNING: Educational purposes only. Not financial advice.<br>Delta Exchange India · EMA + Kernel Regression Strategy<br>BTC: 0.001/lot · ETH: 0.01/lot · SOL: 1/lot · XAUT: 0.001/lot</div>
+  <div class="disc">WARNING: Educational purposes only. Not financial advice.<br>NSE · BSE · MCX · EMA + Kernel Regression Strategy<br>NIFTY lot=50 · BANKNIFTY lot=15 · SENSEX lot=10 · CRUDE lot=100bbl · GAS lot=1250mmBtu</div>
 </div>
 <div id="toast"></div>
 
@@ -432,39 +436,58 @@ function initTouch() {
 // DATA / API
 // ═══════════════════════════════════════════════════════════════════════════════
 const TIMEFRAMES=[
-  {label:'1M', res:'1m', range:3600*4,   secs:60},
-  {label:'3M', res:'3m', range:3600*10,  secs:180},
-  {label:'5M', res:'5m', range:300*220,  secs:300},
-  {label:'15M',res:'15m',range:900*220,  secs:900},
-  {label:'30M',res:'30m',range:1800*200, secs:1800},
-  {label:'1H', res:'1h', range:3600*200, secs:3600},
-  {label:'4H', res:'4h', range:14400*200,secs:14400},
-  {label:'1D', res:'1d', range:86400*200,secs:86400},
+  {label:'1M', yf:'1m',  range:'1d',  secs:60},
+  {label:'2M', yf:'2m',  range:'5d',  secs:120},
+  {label:'5M', yf:'5m',  range:'5d',  secs:300},
+  {label:'15M',yf:'15m', range:'5d',  secs:900},
+  {label:'30M',yf:'30m', range:'1mo', secs:1800},
+  {label:'1H', yf:'1h',  range:'1mo', secs:3600},
+  {label:'1D', yf:'1d',  range:'1y',  secs:86400},
+  {label:'1WK',yf:'1wk', range:'5y',  secs:604800},
 ];
 let activeTF = TIMEFRAMES.find(t => t.label === '5M');
 
-const DELTA_BASE = 'https://api.india.delta.exchange';
-async function proxyFetch(path) {
-  const url = DELTA_BASE + path;
-  try { const r = await fetch(url, {signal: AbortSignal.timeout(5000)}); if (r.ok) return r.json(); } catch(_) {}
-  try { const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(8000)}); if (r.ok) return r.json(); } catch(_) {}
-  const r = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`, {signal: AbortSignal.timeout(8000)});
-  if (!r.ok) throw new Error('failed');
-  return r.json();
+// ── YAHOO FINANCE FETCH ───────────────────────────────────────────────────────
+const PROXIES = [
+  url => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+  url => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+];
+async function yahooFetch(path) {
+  const bases = ['https://query1.finance.yahoo.com','https://query2.finance.yahoo.com'];
+  for (const base of bases) {
+    const url = base + path;
+    for (const px of PROXIES) {
+      try { const r = await fetch(px(url), {signal: AbortSignal.timeout(8000)}); if (r.ok) return r.json(); } catch(_) {}
+    }
+  }
+  throw new Error('Yahoo fetch failed');
+}
+
+// Market hours IST
+function getIST(){ return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Kolkata'})); }
+function isMarketOpen(id){
+  const t=getIST(),h=t.getHours(),m=t.getMinutes(),day=t.getDay();
+  if(day===0||day===6) return false;
+  const mins=h*60+m;
+  return ['CRUDE','GAS'].includes(id) ? mins>=540&&mins<=1410 : mins>=555&&mins<=930;
 }
 
 const SYMS = [
-  {id:'BTC',label:'BTCUSD',icon:'₿',color:'#f59e0b',sym:'BTCUSD',lotInfo:'Min: 1 lot',lotEq:'0.001 BTC',lotNote:'1000 lots=1 BTC',slPct:0.015,tp1Pct:0.02,tp2Pct:0.04,tp3Pct:0.07},
-  {id:'ETH',label:'ETHUSD',icon:'⟠',color:'#6366f1',sym:'ETHUSD',lotInfo:'Min: 1 lot',lotEq:'0.01 ETH',lotNote:'100 lots=1 ETH',slPct:0.018,tp1Pct:0.025,tp2Pct:0.05,tp3Pct:0.09},
-  {id:'SOL',label:'SOLUSD',icon:'◎',color:'#9945ff',sym:'SOLUSD',lotInfo:'Min: 1 lot',lotEq:'1 SOL',lotNote:'1 lot=1 SOL',slPct:0.02,tp1Pct:0.03,tp2Pct:0.06,tp3Pct:0.10},
-  {id:'GOLD',label:'XAUTUSD',icon:'🥇',color:'#fbbf24',sym:'XAUTUSD',lotInfo:'Min: 1 lot',lotEq:'0.001 XAUT',lotNote:'1000 lots=1 XAUT',slPct:0.01,tp1Pct:0.015,tp2Pct:0.03,tp3Pct:0.05},
+  {id:'NIFTY',  label:'NIFTY 50',  icon:'📊',color:'#f59e0b',ticker:'^NSEI',   lotInfo:'50 qty/lot', lotEq:'NSE', lotNote:'Min 1 lot=50 qty', slPct:0.008,tp1Pct:0.012,tp2Pct:0.025,tp3Pct:0.04},
+  {id:'SENSEX', label:'SENSEX',    icon:'🏦',color:'#6366f1',ticker:'^BSESN',  lotInfo:'10 qty/lot', lotEq:'BSE', lotNote:'Min 1 lot=10 qty', slPct:0.008,tp1Pct:0.012,tp2Pct:0.025,tp3Pct:0.04},
+  {id:'BANKNIFTY',label:'BANKNIFTY',icon:'🏧',color:'#06b6d4',ticker:'^NSEBANK',lotInfo:'15 qty/lot',lotEq:'NSE', lotNote:'Min 1 lot=15 qty', slPct:0.010,tp1Pct:0.015,tp2Pct:0.030,tp3Pct:0.05},
+  {id:'CRUDE',  label:'CRUDE OIL', icon:'🛢', color:'#ef4444',ticker:'MCX=F',   lotInfo:'100 bbl/lot',lotEq:'MCX', lotNote:'1 lot=100 barrels',slPct:0.015,tp1Pct:0.020,tp2Pct:0.040,tp3Pct:0.07},
+  {id:'GAS',    label:'NAT GAS',   icon:'🔥', color:'#a855f7',ticker:'NG=F',    lotInfo:'1250 mmBtu', lotEq:'MCX', lotNote:'1 lot=1250 mmBtu', slPct:0.018,tp1Pct:0.025,tp2Pct:0.050,tp3Pct:0.09},
 ];
-const S = {active:'BTC',candles:{},prices:{},prev:{},open:{},sigs:{},levels:{},tickers:{},hist:[]};
+const S = {active:'NIFTY',candles:{},prices:{},prev:{},open:{},sigs:{},levels:{},tickers:{},hist:[]};
 SYMS.forEach(s => { S.candles[s.id]=[]; S.prices[s.id]=null; S.prev[s.id]=null; S.open[s.id]=null; S.sigs[s.id]='HOLD'; S.levels[s.id]=null; S.tickers[s.id]=null; });
 
 setInterval(() => {
-  const n = new Date();
-  document.getElementById('clockEl').textContent = `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')}:${n.getSeconds().toString().padStart(2,'0')}`;
+  const ist = getIST();
+  document.getElementById('clockEl').textContent = `${ist.getHours().toString().padStart(2,'0')}:${ist.getMinutes().toString().padStart(2,'0')}:${ist.getSeconds().toString().padStart(2,'0')} IST`;
+  const closed = !isMarketOpen(S.active);
+  const el = document.getElementById('mktClosed');
+  if(el) el.style.display = closed ? 'block' : 'none';
 }, 1000);
 
 function renderTFBar() {
@@ -535,17 +558,22 @@ function detectPats(c){
   return p;
 }
 
-async function fetchCandles(id,sym){
-  const end=Math.floor(Date.now()/1000),start=end-activeTF.range;
-  const d=await proxyFetch(`/v2/history/candles?symbol=${sym}&resolution=${activeTF.res}&start=${start}&end=${end}`);
-  let raw=Array.isArray(d)?d:d.result;
-  if(!raw?.length)throw new Error('empty');
-  return raw.map(c=>({time:c.time*1000,open:+c.open,high:+c.high,low:+c.low,close:+c.close,volume:+(c.volume||1)})).filter(c=>c.close>0).sort((a,b)=>a.time-b.time);
+async function fetchCandles(id, ticker) {
+  const d = await yahooFetch(`/v8/finance/chart/${encodeURIComponent(ticker)}?interval=${activeTF.yf}&range=${activeTF.range}`);
+  const res = d?.chart?.result?.[0]; if (!res) throw new Error('No result');
+  const ts = res.timestamp, q = res.indicators?.quote?.[0]; if (!ts || !q) throw new Error('No data');
+  return ts.map((t,i) => ({time:t*1000,open:q.open[i]||0,high:q.high[i]||0,low:q.low[i]||0,close:q.close[i]||0,volume:q.volume[i]||1})).filter(c=>c.close>0);
 }
-async function fetchTicker(sym){const d=await proxyFetch(`/v2/tickers/${sym}`);return d?.result||null;}
+async function fetchTicker(ticker) {
+  try {
+    const d = await yahooFetch(`/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1m&range=1d`);
+    const meta = d?.chart?.result?.[0]?.meta; if (!meta) return null;
+    return {mark_price:meta.regularMarketPrice, high:meta.regularMarketDayHigh, low:meta.regularMarketDayLow, open:meta.regularMarketOpen, volume:meta.regularMarketVolume, ltp_change_24h:meta.chartPreviousClose?((meta.regularMarketPrice-meta.chartPreviousClose)/meta.chartPreviousClose*100):0, funding_rate:0, oi_value_usd:0};
+  } catch(e) { return null; }
+}
 async function loadSymbol(s){
   try{
-    const [candles,ticker]=await Promise.all([fetchCandles(s.id,s.sym),fetchTicker(s.sym)]);
+    const [candles,ticker]=await Promise.all([fetchCandles(s.id,s.ticker),fetchTicker(s.ticker)]);
     S.candles[s.id]=candles;S.tickers[s.id]=ticker;S.prev[s.id]=S.prices[s.id];
     S.prices[s.id]=parseFloat(ticker?.mark_price||ticker?.close||candles[candles.length-1].close);
     S.open[s.id]=candles[0].open;
@@ -556,7 +584,7 @@ async function loadSymbol(s){
 async function livePrice(){
   for(const s of SYMS){
     try{
-      const t=await fetchTicker(s.sym);if(!t)continue;
+      const t=await fetchTicker(s.ticker);if(!t)continue;
       S.tickers[s.id]=t;const p=parseFloat(t.mark_price||t.close||0);if(!p)continue;
       S.prev[s.id]=S.prices[s.id];S.prices[s.id]=p;
       const el=document.getElementById(`tp-${s.id}`);if(el)el.textContent=fP(p,s.id);
@@ -567,7 +595,7 @@ async function livePrice(){
   }
 }
 
-function fP(v,id){if(!v&&v!==0)return'---';if(id==='BTC'||id==='GOLD')return v.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1});if(v>1000)return v.toLocaleString(undefined,{maximumFractionDigits:1});if(v>10)return v.toFixed(2);return v.toFixed(4);}
+function fP(v,id){if(!v&&v!==0)return'---';if(['NIFTY','SENSEX','BANKNIFTY'].includes(id))return v.toLocaleString('en-IN',{maximumFractionDigits:0});if(v>1000)return v.toLocaleString(undefined,{maximumFractionDigits:1});if(v>10)return v.toFixed(2);return v.toFixed(3);}
 function fPct(e,t){if(!e||!t)return'';const p=((t-e)/e*100);return`${p>0?'+':''}${p.toFixed(2)}%`;}
 function fLg(v){if(!v)return'---';if(v>=1e9)return(v/1e9).toFixed(2)+'B';if(v>=1e6)return(v/1e6).toFixed(2)+'M';if(v>=1e3)return(v/1e3).toFixed(1)+'K';return v.toFixed(2);}
 function updateStats(id){const t=S.tickers[id];if(!t)return;document.getElementById('st-mark').textContent=`$${fP(parseFloat(t.mark_price||0),id)}`;document.getElementById('st-high').textContent=`$${fP(parseFloat(t.high||0),id)}`;document.getElementById('st-low').textContent=`$${fP(parseFloat(t.low||0),id)}`;const fr=parseFloat(t.funding_rate||0)*100;document.getElementById('st-fund').textContent=`${fr>0?'+':''}${fr.toFixed(4)}%`;document.getElementById('st-oi').textContent=fLg(parseFloat(t.oi_value_usd||0));const chg=parseFloat(t.ltp_change_24h||0);const el=document.getElementById('st-chg');el.textContent=`${chg>0?'+':''}${chg.toFixed(2)}%`;el.style.color=chg>0?'var(--green)':chg<0?'var(--red)':'var(--muted)';}
@@ -875,12 +903,12 @@ function toast(msg,type){const el=document.getElementById('toast');el.textConten
 function setStatus(msg,cls){const el=document.getElementById('statusBar');el.textContent=msg;el.className=`status ${cls}`;}
 
 async function tick(){
-  setStatus(`FETCHING ${activeTF.label} · DELTA EXCHANGE...`,'');
+  setStatus(`FETCHING ${activeTF.label} · NSE·BSE·MCX...`,'');
   let ok=0,failed=[];
   await Promise.all(SYMS.map(async s=>{const r=await loadSymbol(s);if(r)ok++;else failed.push(s.label);}));
   if(ok===0)setStatus('NO DATA — CHECK INTERNET','err');
   else if(ok<SYMS.length)setStatus(`PARTIAL · ${ok}/${SYMS.length} · ${failed.join(', ')} failed`,'warn');
-  else setStatus(`✅ LIVE · ${activeTF.label} · ${ok}/${SYMS.length} MARKETS`,'ok');
+  else setStatus(`✅ LIVE · ${activeTF.label} · ${ok}/${SYMS.length} · NSE·BSE·MCX`,'ok');
   updateUI();
 }
 
