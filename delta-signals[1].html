@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Delta Signals — Crypto</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060a0f;--card:#0d1420;--card2:#111927;--border:#1a2535;
+  --green:#00e5a0;--red:#ff4466;--yellow:#ffd700;--blue:#4fc3f7;
+  --cyan:#00d4ff;--purple:#b084ff;--orange:#ff9500;
+  --text:#e8f4ff;--muted:#4a6080;--muted2:#2a3a50;
+  --font:'Courier New',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
+
+.header{background:linear-gradient(135deg,#0d1420,#0a1628);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:15px;font-weight:700;color:var(--cyan);letter-spacing:2px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px;transition:.3s}
+.status-dot.ok{background:var(--green);box-shadow:0 0 8px var(--green)}
+.status-dot.warn{background:var(--yellow);box-shadow:0 0 8px var(--yellow)}
+.status-dot.err{background:var(--red);box-shadow:0 0 8px var(--red)}
+.status-txt{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+.tabs{display:flex;overflow-x:auto;background:var(--card);border-bottom:1px solid var(--border);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:10px 14px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;transition:.2s;white-space:nowrap}
+.tab.active{color:var(--cyan);border-color:var(--cyan)}
+.tab-price{font-size:10px;display:block;margin-top:2px}
+.tab.up .tab-price{color:var(--green)}
+.tab.dn .tab-price{color:var(--red)}
+
+.tf-bar{display:flex;gap:6px;padding:8px 12px;background:var(--card2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
+.tf-bar::-webkit-scrollbar{display:none}
+.tf-btn{flex-shrink:0;padding:5px 10px;font-size:10px;font-weight:700;font-family:var(--font);border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--muted);cursor:pointer;letter-spacing:1px;transition:.2s}
+.tf-btn.active{background:var(--orange);border-color:var(--orange);color:#000}
+
+.src-bar{padding:6px 12px;background:var(--bg);font-size:10px;color:var(--muted);letter-spacing:1px;display:flex;align-items:center;gap:6px}
+.src-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.src-dot.ok{background:var(--green)}
+.src-dot.warn{background:var(--yellow)}
+.src-dot.err{background:var(--red)}
+
+.price-area{padding:16px 14px 10px;position:relative}
+.price-main{font-size:42px;font-weight:700;letter-spacing:-1px;line-height:1}
+.price-chg{font-size:16px;font-weight:700;margin-left:10px}
+.price-chg.up{color:var(--green)}
+.price-chg.dn{color:var(--red)}
+.ohlc{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--muted)}
+.ohlc span{color:var(--text)}
+
+.chart-wrap{position:relative;height:220px;margin:0 0 4px}
+canvas{display:block}
+.chart-overlay{position:absolute;top:6px;right:8px;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+.rsi-wrap{height:60px;position:relative;margin-bottom:2px}
+.rsi-label{position:absolute;left:6px;top:4px;font-size:9px;color:var(--muted);letter-spacing:1px}
+
+.sig-card{margin:10px 12px;border-radius:8px;padding:14px 16px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sig-txt{font-size:28px;font-weight:700;letter-spacing:3px}
+.sig-txt.BUY{color:var(--green)}
+.sig-txt.SELL{color:var(--red)}
+.sig-txt.HOLD{color:var(--muted)}
+.sig-meta{text-align:right;font-size:10px;color:var(--muted);line-height:1.6}
+.sig-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--muted2);overflow:hidden}
+.sig-fill{height:100%;border-radius:2px;transition:.5s}
+
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 10px}
+.lev{background:var(--card);border-radius:6px;padding:10px 12px;border-left:3px solid var(--border)}
+.lev.entry{border-color:var(--blue)}
+.lev.sl{border-color:var(--red)}
+.lev.tp{border-color:var(--green)}
+.lev.res{border-color:var(--orange)}
+.lev.sup{border-color:var(--purple)}
+.lev.rr{border-color:var(--yellow)}
+.lev-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px}
+.lev-val{font-size:14px;font-weight:700}
+.lev.entry .lev-val{color:var(--blue)}
+.lev.sl .lev-val{color:var(--red)}
+.lev.tp .lev-val{color:var(--green)}
+.lev.res .lev-val{color:var(--orange)}
+.lev.sup .lev-val{color:var(--purple)}
+.lev.rr .lev-val{color:var(--yellow)}
+
+.oi-section{margin:4px 12px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);padding:12px}
+.oi-title{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:10px}
+.oi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.oi-item{background:var(--card2);border-radius:5px;padding:8px 10px}
+.oi-item-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px}
+.oi-item-val{font-size:13px;font-weight:700;color:var(--text)}
+.oi-item-val.up{color:var(--green)}
+.oi-item-val.dn{color:var(--red)}
+.ls-bar-wrap{margin-top:6px}
+.ls-labels{display:flex;justify-content:space-between;font-size:9px;margin-bottom:4px}
+.ls-bar{height:8px;border-radius:4px;background:var(--muted2);overflow:hidden;display:flex}
+.ls-long{background:var(--green);transition:.5s}
+.ls-short{background:var(--red);flex:1;transition:.5s}
+.ls-badge{text-align:center;font-size:10px;font-weight:700;margin-top:6px;letter-spacing:2px}
+.ls-badge.bull{color:var(--green)}
+.ls-badge.bear{color:var(--red)}
+.ls-badge.neu{color:var(--yellow)}
+
+.hist-section{margin:0 12px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);padding:12px}
+.hist-title{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px}
+.hist-item:last-child{border:none}
+.hist-sig{font-weight:700;letter-spacing:1px}
+.hist-sig.BUY{color:var(--green)}
+.hist-sig.SELL{color:var(--red)}
+.hist-time{color:var(--muted);font-size:10px}
+
+.toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;letter-spacing:1px;z-index:999;transition:.3s;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.green{border-color:var(--green);color:var(--green)}
+.toast.red{border-color:var(--red);color:var(--red)}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ DELTA SIGNALS</div>
+  <div style="display:flex;align-items:center;gap:6px">
+    <span class="status-dot" id="sdot"></span>
+    <span class="status-txt" id="stxt">CONNECTING...</span>
+  </div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div class="tf-bar" id="tfbar"></div>
+<div class="src-bar">
+  <span class="src-dot" id="src-dot"></span>
+  <span id="src-txt">INITIALIZING</span>
+</div>
+
+<div class="price-area">
+  <div>
+    <span class="price-main" id="price">--</span>
+    <span class="price-chg" id="pchg">--</span>
+  </div>
+  <div class="ohlc">
+    H: <span id="ph">--</span> &nbsp; L: <span id="pl">--</span> &nbsp; VOL: <span id="pvol">--</span> &nbsp; ATR: <span id="patr">--</span>
+  </div>
+</div>
+
+<div class="chart-wrap">
+  <canvas id="priceChart"></canvas>
+  <div class="chart-overlay" id="chartLabel">PRICE</div>
+</div>
+<div class="rsi-wrap">
+  <canvas id="rsiChart"></canvas>
+  <div class="rsi-label">RSI</div>
+</div>
+
+<div class="sig-card">
+  <div>
+    <div class="sig-txt HOLD" id="sigTxt">HOLD</div>
+    <div class="sig-bar"><div class="sig-fill" id="sigFill" style="width:50%;background:var(--muted)"></div></div>
+  </div>
+  <div class="sig-meta" id="sigMeta">BULL 0<br>BEAR 0<br>STR 0%</div>
+</div>
+
+<div class="levels" id="levels">
+  <div class="lev entry"><div class="lev-label">ENTRY</div><div class="lev-val" id="lvEntry">--</div></div>
+  <div class="lev sl"><div class="lev-label">STOP LOSS</div><div class="lev-val" id="lvSL">--</div></div>
+  <div class="lev tp"><div class="lev-label">TAKE PROFIT 1</div><div class="lev-val" id="lvTP1">--</div></div>
+  <div class="lev tp"><div class="lev-label">TAKE PROFIT 2</div><div class="lev-val" id="lvTP2">--</div></div>
+  <div class="lev tp"><div class="lev-label">TAKE PROFIT 3</div><div class="lev-val" id="lvTP3">--</div></div>
+  <div class="lev res"><div class="lev-label">RESISTANCE</div><div class="lev-val" id="lvRes">--</div></div>
+  <div class="lev sup"><div class="lev-label">SUPPORT</div><div class="lev-val" id="lvSup">--</div></div>
+  <div class="lev rr"><div class="lev-label">RISK:REWARD</div><div class="lev-val" id="lvRR">--</div></div>
+</div>
+
+<div class="oi-section">
+  <div class="oi-title">OPEN INTEREST</div>
+  <div class="oi-grid">
+    <div class="oi-item"><div class="oi-item-label">TOTAL OI</div><div class="oi-item-val" id="oiTotal">--</div></div>
+    <div class="oi-item"><div class="oi-item-label">OI VALUE (USD)</div><div class="oi-item-val" id="oiVal">--</div></div>
+    <div class="oi-item"><div class="oi-item-label">OI CHANGE</div><div class="oi-item-val" id="oiChg">--</div></div>
+    <div class="oi-item"><div class="oi-item-label">LONG/SHORT</div><div class="oi-item-val" id="oiLS">--</div></div>
+  </div>
+  <div class="ls-bar-wrap">
+    <div class="ls-labels">
+      <span style="color:var(--green)" id="lsPct">LONG 50%</span>
+      <span style="color:var(--red)" id="ssPct">SHORT 50%</span>
+    </div>
+    <div class="ls-bar">
+      <div class="ls-long" id="lsLong" style="width:50%"></div>
+      <div class="ls-short" id="lsShort"></div>
+    </div>
+    <div class="ls-badge neu" id="lsBadge">BALANCED</div>
+  </div>
+</div>
+
+<div class="hist-section">
+  <div class="hist-title">SIGNAL HISTORY</div>
+  <div id="histList"><div style="color:var(--muted);font-size:11px">No signals yet...</div></div>
+</div>
+
+<div class="toast" id="toast">--</div>
+
+<script>
+// ═══════════ CONFIG ═══════════
+const SYMS = [
+  { id:'BTC', label:'BTC',  sym:'BTCUSD',   dSym:'BTC_USDT', bSym:'BTCUSDT',   fmt:v=>`$${Math.round(v).toLocaleString()}`,       dp:0 },
+  { id:'ETH', label:'ETH',  sym:'ETHUSD',   dSym:'ETH_USDT', bSym:'ETHUSDT',   fmt:v=>`$${v.toFixed(1)}`,                         dp:1 },
+  { id:'SOL', label:'SOL',  sym:'SOLUSD',   dSym:'SOL_USDT', bSym:'SOLUSDT',   fmt:v=>`$${v.toFixed(2)}`,                         dp:2 },
+  { id:'XAU', label:'XAU',  sym:'XAUUSD',   dSym:null,       bSym:'XAUUSDT',   fmt:v=>`$${Math.round(v).toLocaleString()}`,       dp:0 },
+];
+
+const TFS = [
+  {label:'30S', mins:0.5},
+  {label:'1M',  mins:1},
+  {label:'3M',  mins:3},
+  {label:'5M',  mins:5},
+  {label:'15M', mins:15},
+  {label:'30M', mins:30},
+  {label:'1H',  mins:60},
+  {label:'4H',  mins:240},
+];
+
+const S = {
+  active: 'BTC',
+  tf: 4,   // default 5M
+  prices: {},
+  candles: {},
+  tickers: {},
+  sigs: {},
+  hist: [],
+  oiPrev: {},
+  // Price source tracking
+  deltaWsReady: false,
+  deltaWsLastUpdate: {},  // {sym: timestamp}
+
+};
+
+// ═══════════ HELPERS ═══════════
+const $ = id => document.getElementById(id);
+const fmt = (v, inst) => {
+  const s = SYMS.find(x => x.id === inst || x === inst);
+  return s ? s.fmt(v) : `$${v}`;
+};
+const fmtInst = () => SYMS.find(s => s.id === S.active);
+
+function setStatus(txt, type='') {
+  $('sdot').className = 'status-dot' + (type ? ' '+type : '');
+  $('stxt').textContent = txt;
+}
+
+function setSrcBar(txt, type='') {
+  $('src-dot').className = 'src-dot' + (type ? ' '+type : '');
+  $('src-txt').textContent = txt;
+}
+
+function toast(msg, type='') {
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.className = 'toast', 2800);
+}
+
+// ═══════════ TABS ═══════════
+function renderTabs() {
+  const el = $('tabs');
+  el.innerHTML = '';
+  SYMS.forEach(s => {
+    const p = S.prices[s.id];
+    const prev = S.tickers[s.id]?.open_24h || p;
+    const chg = prev ? ((p - prev) / prev * 100) : 0;
+    const dir = chg >= 0 ? 'up' : 'dn';
+    const d = document.createElement('div');
+    d.className = `tab ${dir}${s.id === S.active ? ' active' : ''}`;
+    d.innerHTML = `${s.label}<span class="tab-price">${p ? s.fmt(p) : '--'}</span>`;
+    d.onclick = () => { S.active = s.id; renderTabs(); updateUI(); tick(); };
+    el.appendChild(d);
+  });
+}
+
+function renderTFBar() {
+  const el = $('tfbar');
+  el.innerHTML = '';
+  TFS.forEach((tf, i) => {
+    const b = document.createElement('button');
+    b.className = 'tf-btn' + (i === S.tf ? ' active' : '');
+    b.textContent = tf.label;
+    b.onclick = () => { S.tf = i; renderTFBar(); S.candles[S.active] = []; tick(); };
+    el.appendChild(b);
+  });
+}
+
+// ═══════════ DELTA INDIA WEBSOCKET (PRIMARY) ═══════════
+let deltaWs = null;
+let deltaWsRetry = 0;
+
+function connectDeltaWS() {
+  try {
+    deltaWs = new WebSocket('wss://socket.india.delta.exchange');
+
+    deltaWs.onopen = () => {
+      deltaWsRetry = 0;
+      S.deltaWsReady = true;
+
+      // Subscribe to all symbols
+      const symbols = SYMS.filter(s => s.dSym).map(s => `v2/ticker:${s.sym}`);
+      deltaWs.send(JSON.stringify({
+        type: 'subscribe',
+        payload: { channels: [{ name: 'v2/ticker', symbols: SYMS.filter(s=>s.dSym).map(s=>s.sym) }] }
+      }));
+
+      setSrcBar('✅ LIVE · DELTA INDIA WS', 'ok');
+      setStatus('LIVE · DELTA INDIA', 'ok');
+    };
+
+    deltaWs.onmessage = e => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (!msg || msg.type !== 'v2/ticker') return;
+        const d = msg;
+        // Find matching symbol
+        const sym = SYMS.find(s => s.sym === d.symbol);
+        if (!sym) return;
+
+        const price = parseFloat(d.close || d.mark_price || d.last_price);
+        if (!price || isNaN(price)) return;
+
+        const wasEmpty = !S.prices[sym.id];
+        S.prices[sym.id] = price;
+        S.deltaWsLastUpdate[sym.id] = Date.now();
+
+        // Store ticker data
+        S.tickers[sym.id] = {
+          open_24h: parseFloat(d.open) || price,
+          high: parseFloat(d.high) || price,
+          low: parseFloat(d.low) || price,
+          volume: parseFloat(d.volume) || 0,
+          oi: parseFloat(d.oi) || 0,
+          oi_value: parseFloat(d.oi_value) || 0,
+        };
+
+        if (sym.id === S.active) {
+          const el = $('price');
+          if (el) el.textContent = sym.fmt(price);
+          updatePriceChange();
+          setSrcBar('✅ LIVE · DELTA INDIA WS', 'ok');
+        }
+        renderTabs();
+
+        if (wasEmpty) tick();
+      } catch(err) {}
+    };
+
+    deltaWs.onerror = () => {
+      S.deltaWsReady = false;
+      setSrcBar('⚠ DELTA WS ERROR · SWITCHING TO BINANCE', 'warn');
+    };
+
+    deltaWs.onclose = () => {
+      S.deltaWsReady = false;
+      // Retry with backoff
+      const delay = Math.min(30000, 2000 * Math.pow(1.5, deltaWsRetry++));
+      setSrcBar(`⚠ DELTA WS CLOSED · RETRY IN ${Math.round(delay/1000)}s`, 'warn');
+      setTimeout(connectDeltaWS, delay);
+      // Fall back to Binance while reconnecting
+      connectBinanceWS();
+    };
+  } catch(e) {
+    setSrcBar('❌ DELTA WS FAILED · USING BINANCE', 'err');
+    connectBinanceWS();
+  }
+}
+
+// ═══════════ BINANCE WEBSOCKET (BACKUP) ═══════════
+let binanceWs = null;
+let binanceWsActive = false;
+
+function connectBinanceWS() {
+  if (binanceWs && binanceWs.readyState === 1) return; // Already connected
+
+  try {
+    const streams = SYMS.filter(s => s.bSym).map(s => `${s.bSym.toLowerCase()}@miniTicker`).join('/');
+    binanceWs = new WebSocket(`wss://stream.binance.com:9443/stream?streams=${streams}`);
+
+    binanceWs.onopen = () => {
+      binanceWsActive = true;
+      if (!S.deltaWsReady) {
+        setSrcBar('⚡ BINANCE WS (BACKUP)', 'warn');
+      }
+    };
+
+    binanceWs.onmessage = e => {
+      try {
+        const d = JSON.parse(e.data).data;
+        if (!d) return;
+        const sym = SYMS.find(s => s.bSym === d.s);
+        if (!sym) return;
+
+        const bncPrice = parseFloat(d.c);
+        if (!bncPrice || isNaN(bncPrice)) return;
+
+        // Only use Binance if Delta WS is NOT fresh (> 5 seconds old)
+        const deltaFresh = S.deltaWsLastUpdate[sym.id] && (Date.now() - S.deltaWsLastUpdate[sym.id]) < 5000;
+
+        if (!deltaFresh) {
+          // Delta not fresh — use Binance
+          S.prices[sym.id] = bncPrice;
+          if (sym.id === S.active) {
+            const el = $('price');
+            if (el) el.textContent = sym.fmt(bncPrice);
+            updatePriceChange();
+            setSrcBar('⚡ BINANCE WS (BACKUP — DELTA OFFLINE)', 'warn');
+          }
+          renderTabs();
+        }
+        // If Delta IS fresh — ignore Binance (avoids $25 gap!)
+      } catch(err) {}
+    };
+
+    binanceWs.onerror = () => { binanceWsActive = false; };
+    binanceWs.onclose = () => { binanceWsActive = false; };
+  } catch(e) {}
+}
+
+// ═══════════ XAU — DELTA INDIA REST POLL ═══════════
+// Uses XAUTUSD (Delta's Gold RWA token) — same exchange, accurate price
+async function fetchXAUPrice() {
+  // Try Delta India XAUTUSD first (Gold token on Delta)
+  const sources = [
+    () => fetch('https://cdn.india.deltaex.org/v2/tickers/XAUTUSD').then(r=>r.json()),
+    () => fetch('https://cdn.india.deltaex.org/v2/tickers/XAUUSD').then(r=>r.json()),
+  ];
+
+  for (const src of sources) {
+    try {
+      const d = await src();
+      const t = d.result;
+      if (!t) continue;
+      const price = parseFloat(t.close || t.mark_price || t.last_price);
+      if (!price || isNaN(price)) continue;
+
+      S.prices['XAU'] = price;
+      S.tickers['XAU'] = {
+        open_24h: parseFloat(t.open) || price,
+        high: parseFloat(t.high) || price,
+        low: parseFloat(t.low) || price,
+        volume: parseFloat(t.volume) || 0,
+      };
+
+      if (S.active === 'XAU') {
+        const el = $('price');
+        if (el) el.textContent = SYMS.find(s => s.id === 'XAU').fmt(price);
+        updatePriceChange();
+        setSrcBar('✅ LIVE · XAU · DELTA INDIA', 'ok');
+      }
+      renderTabs();
+      return; // success — stop trying other sources
+    } catch(e) {}
+  }
+
+  // Last fallback: Metals-API via public proxy
+  try {
+    const resp = await fetch('https://api.frankfurter.app/latest?from=XAU&to=USD');
+    const d = await resp.json();
+    const price = d.rates?.USD;
+    if (price && !isNaN(price)) {
+      S.prices['XAU'] = price;
+      if (!S.tickers['XAU']) S.tickers['XAU'] = { open_24h: price, high: price, low: price, volume: 0 };
+      if (S.active === 'XAU') {
+        $('price').textContent = SYMS.find(s=>s.id==='XAU').fmt(price);
+        updatePriceChange();
+        setSrcBar('⚡ XAU · FRANKFURTER (DELAYED)', 'warn');
+      }
+      renderTabs();
+    }
+  } catch(e) {}
+}
+
+// Poll XAU every 5 seconds
+function startXAUPoll() {
+  fetchXAUPrice();
+  setInterval(fetchXAUPrice, 5000);
+}
+
+// ═══════════ PRICE CHANGE ═══════════
+function updatePriceChange() {
+  const inst = fmtInst();
+  const p = S.prices[inst.id];
+  const tk = S.tickers[inst.id];
+  if (!p || !tk) return;
+  const open = tk.open_24h || p;
+  const chg = ((p - open) / open * 100);
+  const el = $('pchg');
+  el.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+  el.className = 'price-chg ' + (chg >= 0 ? 'up' : 'dn');
+
+  // OHLC
+  $('ph').textContent = inst.fmt(tk.high || p);
+  $('pl').textContent = inst.fmt(tk.low || p);
+  const vol = tk.volume || 0;
+  $('pvol').textContent = vol > 1e9 ? (vol/1e9).toFixed(1)+'B' : vol > 1e6 ? (vol/1e6).toFixed(1)+'M' : vol > 1e3 ? (vol/1e3).toFixed(1)+'K' : vol.toFixed(0);
+}
+
+// ═══════════ CANDLES (REST API) ═══════════
+async function fetchCandles(sym, tfMins, limit) {
+  // Try Delta India REST first
+  try {
+    const res_map = {0.5:'1m', 1:'1m', 3:'3m', 5:'5m', 15:'15m', 30:'30m', 60:'1h', 240:'4h'};
+    const r_tf = tfMins <= 1 ? 1 : tfMins;
+    const end = Math.floor(Date.now()/1000);
+    const start = end - r_tf * 60 * limit;
+    const url = `https://cdn.india.deltaex.org/v2/history/candles?resolution=${r_tf}&symbol=${sym}&start=${start}&end=${end}`;
+    const resp = await fetch(url);
+    const d = await resp.json();
+    if (d.result && d.result.close && d.result.close.length > 5) {
+      const closes = d.result.close;
+      const opens  = d.result.open || closes;
+      const highs  = d.result.high || closes;
+      const lows   = d.result.low  || closes;
+      const times  = d.result.time || [];
+      const vols   = d.result.volume || [];
+      return closes.map((c,i) => ({
+        t: (times[i]||0)*1000,
+        o: opens[i], h: highs[i], l: lows[i], c: c,
+        v: vols[i]||0
+      }));
+    }
+  } catch(e) {}
+
+  // Fallback: Binance
+  try {
+    const bSym = SYMS.find(s => s.sym === sym)?.bSym;
+    if (!bSym) return [];
+    const bi_map = {0.5:'1m',1:'1m',3:'3m',5:'5m',15:'15m',30:'30m',60:'1h',240:'4h'};
+    const bi_tf = bi_map[tfMins] || '5m';
+    const resp = await fetch(`https://api.binance.com/api/v3/klines?symbol=${bSym}&interval=${bi_tf}&limit=${limit}`);
+    const d = await resp.json();
+    if (!Array.isArray(d)) return [];
+    return d.map(k => ({t:k[0], o:+k[1], h:+k[2], l:+k[3], c:+k[4], v:+k[5]}));
+  } catch(e) { return []; }
+}
+
+// ═══════════ OI ═══════════
+async function fetchOI(inst) {
+  try {
+    const url = `https://cdn.india.deltaex.org/v2/products/${inst.sym}`;
+    const resp = await fetch(url);
+    const d = await resp.json();
+    if (d.result) {
+      return {
+        oi: parseFloat(d.result.open_interest) || 0,
+        oi_value: parseFloat(d.result.open_interest_value) || 0,
+        long_ratio: parseFloat(d.result.long_ratio) || 50,
+      };
+    }
+  } catch(e) {}
+  return null;
+}
+
+async function refreshOI() {
+  const inst = fmtInst();
+  const oi = await fetchOI(inst);
+  if (!oi) return;
+
+  const prev = S.oiPrev[inst.id] || oi.oi;
+  const oiChgPct = prev ? ((oi.oi - prev) / prev * 100) : 0;
+  S.oiPrev[inst.id] = oi.oi;
+
+  const longPct = Math.min(99, Math.max(1, oi.long_ratio));
+  const shortPct = 100 - longPct;
+
+  $('oiTotal').textContent = oi.oi > 1e6 ? (oi.oi/1e6).toFixed(2)+'M' : oi.oi > 1e3 ? (oi.oi/1e3).toFixed(1)+'K' : oi.oi.toFixed(0);
+  $('oiVal').textContent = oi.oi_value > 1e9 ? '$'+(oi.oi_value/1e9).toFixed(2)+'B' : oi.oi_value > 1e6 ? '$'+(oi.oi_value/1e6).toFixed(1)+'M' : '$'+oi.oi_value.toFixed(0);
+
+  const chgEl = $('oiChg');
+  chgEl.textContent = (oiChgPct >= 0 ? '▲' : '▼') + Math.abs(oiChgPct).toFixed(2) + '%';
+  chgEl.className = 'oi-item-val ' + (oiChgPct >= 0 ? 'up' : 'dn');
+
+  $('oiLS').textContent = longPct.toFixed(0) + '% / ' + shortPct.toFixed(0) + '%';
+  $('lsPct').textContent = 'LONG ' + longPct.toFixed(0) + '%';
+  $('ssPct').textContent = 'SHORT ' + shortPct.toFixed(0) + '%';
+  $('lsLong').style.width = longPct + '%';
+
+  const badge = $('lsBadge');
+  if (longPct >= 60) { badge.textContent = '🟢 LONGS DOMINANT'; badge.className = 'ls-badge bull'; }
+  else if (shortPct >= 60) { badge.textContent = '🔴 SHORTS DOMINANT'; badge.className = 'ls-badge bear'; }
+  else { badge.textContent = '⚡ BALANCED'; badge.className = 'ls-badge neu'; }
+}
+
+// ═══════════ INDICATORS ═══════════
+function ema(arr, period) {
+  const k = 2 / (period + 1);
+  let e = arr[0];
+  return arr.map((v, i) => { e = i === 0 ? v : v * k + e * (1 - k); return e; });
+}
+
+function rsi(closes, period = 14) {
+  if (closes.length < period + 1) return closes.map(() => 50);
+  let gains = 0, losses = 0;
+  for (let i = 1; i <= period; i++) {
+    const diff = closes[i] - closes[i-1];
+    diff > 0 ? gains += diff : losses -= diff;
+  }
+  const result = new Array(period).fill(50);
+  let ag = gains / period, al = losses / period;
+  result.push(al === 0 ? 100 : 100 - 100 / (1 + ag / al));
+  for (let i = period + 1; i < closes.length; i++) {
+    const diff = closes[i] - closes[i-1];
+    ag = (ag * (period - 1) + Math.max(diff, 0)) / period;
+    al = (al * (period - 1) + Math.max(-diff, 0)) / period;
+    result.push(al === 0 ? 100 : 100 - 100 / (1 + ag / al));
+  }
+  return result;
+}
+
+function atr(candles, period = 14) {
+  if (candles.length < 2) return 0;
+  const trs = candles.map((c, i) => {
+    if (i === 0) return c.h - c.l;
+    return Math.max(c.h - c.l, Math.abs(c.h - candles[i-1].c), Math.abs(c.l - candles[i-1].c));
+  });
+  return trs.slice(-period).reduce((a, b) => a + b, 0) / period;
+}
+
+function analyze(candles, price) {
+  if (!candles || candles.length < 20) return null;
+  const closes = candles.map(c => c.c);
+  const e9  = ema(closes, 9);
+  const e21 = ema(closes, 21);
+  const e50 = ema(closes, 50);
+  const rsiArr = rsi(closes);
+  const atrVal = atr(candles);
+  const lastRsi = rsiArr[rsiArr.length - 1];
+  const lastE9  = e9[e9.length - 1];
+  const lastE21 = e21[e21.length - 1];
+  const lastE50 = e50[e50.length - 1];
+  const p = price || closes[closes.length - 1];
+
+  let bull = 0, bear = 0;
+  if (lastE9 > lastE21) bull++; else bear++;
+  if (lastE21 > lastE50) bull++; else bear++;
+  if (p > lastE9) bull++; else bear++;
+  if (lastRsi > 55) bull++; else if (lastRsi < 45) bear++;
+
+  const str = Math.round(Math.max(bull, bear) / 4 * 100);
+  let sig = 'HOLD';
+  if (bull >= 3 && lastRsi < 70) sig = 'BUY';
+  else if (bear >= 3 && lastRsi > 30) sig = 'SELL';
+
+  const support    = Math.min(...candles.slice(-20).map(c => c.l));
+  const resistance = Math.max(...candles.slice(-20).map(c => c.h));
+  const sl = sig === 'BUY'  ? p - atrVal * 1.5 : sig === 'SELL' ? p + atrVal * 1.5 : p - atrVal;
+  const tp1 = sig === 'BUY' ? p + atrVal * 1   : p - atrVal * 1;
+  const tp2 = sig === 'BUY' ? p + atrVal * 2   : p - atrVal * 2;
+  const tp3 = sig === 'BUY' ? p + atrVal * 3   : p - atrVal * 3;
+  const risk = Math.abs(p - sl);
+  const rew  = Math.abs(tp2 - p);
+  const rr   = risk > 0 ? (rew / risk).toFixed(2) : '--';
+
+  return { sig, bull, bear, str, e9, e21, e50, rsiArr, atrVal, support, resistance, sl, tp1, tp2, tp3, rr, closes };
+}
+
+// ═══════════ CHARTS ═══════════
+function drawPrice(result) {
+  const canvas = $('priceChart');
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  const candles = S.candles[S.active];
+  if (!candles || candles.length < 2) return;
+  const { e9, e21, e50 } = result;
+
+  const closes = candles.map(c => c.c);
+  const mn = Math.min(...closes) * 0.9995;
+  const mx = Math.max(...closes) * 1.0005;
+  const W = canvas.width, H = canvas.height;
+  const pad = { t: 10, b: 20, l: 8, r: 60 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const n = closes.length;
+  const barW = Math.max(1, cw / n);
+  const toX = i => pad.l + i * barW + barW / 2;
+  const toY = v => pad.t + ch - ((v - mn) / (mx - mn)) * ch;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#1a2535'; ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.t + ch * i / 4;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r + 40, y); ctx.stroke();
+    const v = mx - (mx - mn) * i / 4;
+    ctx.fillStyle = '#4a6080'; ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+    ctx.fillText(fmtInst().fmt(v), W - pad.r + 4, y + 3);
+  }
+
+  // Candles (mini bars for performance)
+  candles.forEach((c, i) => {
+    const x = toX(i);
+    const isUp = c.c >= c.o;
+    ctx.strokeStyle = isUp ? '#00e5a0' : '#ff4466';
+    ctx.fillStyle   = isUp ? '#00e5a0' : '#ff4466';
+    ctx.lineWidth = 1;
+    const oy = toY(c.o), cy2 = toY(c.c);
+    const hy = toY(c.h), ly = toY(c.l);
+    ctx.beginPath(); ctx.moveTo(x, hy); ctx.lineTo(x, ly); ctx.stroke();
+    const bh = Math.max(1, Math.abs(cy2 - oy));
+    ctx.fillRect(x - barW/2 * 0.7, Math.min(oy, cy2), barW * 0.7, bh);
+  });
+
+  // EMAs
+  const drawLine = (arr, color, dash=[]) => {
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash(dash);
+    ctx.beginPath();
+    arr.forEach((v, i) => {
+      const x = toX(i), y = toY(v);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke(); ctx.setLineDash([]);
+  };
+
+  drawLine(e9,  '#4fc3f7');
+  drawLine(e21, '#ffd700');
+  drawLine(e50, '#b084ff', [4, 4]);
+
+  // Legend
+  ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+  [['EMA9','#4fc3f7'],['EMA21','#ffd700'],['EMA50','#b084ff']].forEach(([l,c],i) => {
+    ctx.fillStyle = c;
+    ctx.fillText(l, pad.l + i * 44, pad.t + 10);
+  });
+}
+
+function drawRsi(result) {
+  const canvas = $('rsiChart');
+  const wrap = canvas.parentElement;
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  const { rsiArr } = result;
+  if (!rsiArr || rsiArr.length < 2) return;
+
+  const W = canvas.width, H = canvas.height;
+  const pad = { t: 4, b: 4, l: 8, r: 60 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const n = rsiArr.length;
+  const barW = cw / n;
+  const toX = i => pad.l + i * barW;
+  const toY = v => pad.t + ch - ((v - 0) / 100) * ch;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Zones
+  ctx.fillStyle = 'rgba(255,68,102,0.08)'; ctx.fillRect(pad.l, pad.t, cw, (ch/100)*30);
+  ctx.fillStyle = 'rgba(0,229,160,0.08)';  ctx.fillRect(pad.l, toY(70), cw, (ch/100)*30);
+
+  // Lines
+  [30, 70].forEach(v => {
+    ctx.strokeStyle = '#1a2535'; ctx.lineWidth = 0.5; ctx.setLineDash([2,2]);
+    ctx.beginPath(); ctx.moveTo(pad.l, toY(v)); ctx.lineTo(W - pad.r + 40, toY(v)); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#4a6080'; ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+    ctx.fillText(v, W - pad.r + 4, toY(v) + 3);
+  });
+
+  // RSI line
+  ctx.beginPath(); ctx.strokeStyle = '#ff9500'; ctx.lineWidth = 1.5;
+  rsiArr.forEach((v, i) => {
+    const x = toX(i) + barW/2, y = toY(v);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  const last = rsiArr[rsiArr.length - 1];
+  ctx.fillStyle = last > 70 ? '#ff4466' : last < 30 ? '#00e5a0' : '#ff9500';
+  ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+  ctx.fillText('RSI ' + last.toFixed(0), W - pad.r + 4, toY(last) + 3);
+}
+
+// ═══════════ UI UPDATE ═══════════
+function updateUI() {
+  const inst = fmtInst();
+  const candles = S.candles[inst.id];
+  const price = S.prices[inst.id];
+
+  if (!price) {
+    $('price').textContent = '--';
+    return;
+  }
+
+  $('price').textContent = inst.fmt(price);
+  updatePriceChange();
+
+  const result = candles && candles.length >= 20 ? analyze(candles, price) : null;
+  if (!result) return;
+
+  // Signal
+  const { sig, bull, bear, str } = result;
+  const sTxt = $('sigTxt');
+  sTxt.textContent = sig;
+  sTxt.className = 'sig-txt ' + sig;
+  $('sigMeta').innerHTML = `BULL ${bull}<br>BEAR ${bear}<br>STR ${str}%`;
+  const fill = $('sigFill');
+  fill.style.width = str + '%';
+  fill.style.background = sig === 'BUY' ? 'var(--green)' : sig === 'SELL' ? 'var(--red)' : 'var(--muted)';
+
+  // Signal history
+  const prevSig = S.sigs[inst.id];
+  if (prevSig !== sig && sig !== 'HOLD') {
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    S.hist.push({ sig, sym: inst.label, price, time: timeStr });
+    if (S.hist.length > 50) S.hist.shift();
+    toast(`${sig} SIGNAL — ${inst.label} @ ${inst.fmt(price)}`, sig === 'BUY' ? 'green' : 'red');
+  }
+  S.sigs[inst.id] = sig;
+
+  // Levels
+  const { sl, tp1, tp2, tp3, support, resistance, rr, atrVal } = result;
+  $('lvEntry').textContent = inst.fmt(price);
+  $('lvSL').textContent    = inst.fmt(sl);
+  $('lvTP1').textContent   = inst.fmt(tp1);
+  $('lvTP2').textContent   = inst.fmt(tp2);
+  $('lvTP3').textContent   = inst.fmt(tp3);
+  $('lvRes').textContent   = inst.fmt(resistance);
+  $('lvSup').textContent   = inst.fmt(support);
+  $('lvRR').textContent    = '1:' + rr;
+  $('patr').textContent    = inst.fmt(atrVal);
+
+  // Charts
+  drawPrice(result);
+  drawRsi(result);
+
+  // History
+  const histEl = $('histList');
+  if (S.hist.length === 0) {
+    histEl.innerHTML = '<div style="color:var(--muted);font-size:11px">No signals yet...</div>';
+  } else {
+    histEl.innerHTML = [...S.hist].reverse().slice(0, 8).map(h =>
+      `<div class="hist-item">
+        <span class="hist-sig ${h.sig}">${h.sig}</span>
+        <span>${h.sym} @ ${SYMS.find(s=>s.id===h.sym)?.fmt(h.price)||h.price}</span>
+        <span class="hist-time">${h.time}</span>
+      </div>`
+    ).join('');
+  }
+}
+
+// ═══════════ TICK (REST CANDLE FETCH) ═══════════
+async function tick() {
+  const inst = fmtInst();
+  const tf = TFS[S.tf];
+
+  // Update source bar based on current state
+  const deltaFresh = S.deltaWsLastUpdate[inst.id] && (Date.now() - S.deltaWsLastUpdate[inst.id]) < 5000;
+  if (deltaFresh) {
+    setSrcBar(`✅ LIVE · ${tf.label} · ${inst.label} · DELTA INDIA`, 'ok');
+    setStatus('LIVE · DELTA INDIA', 'ok');
+  } else if (S.prices[inst.id]) {
+    setSrcBar(`⚡ ${tf.label} · ${inst.label} · BINANCE (BACKUP)`, 'warn');
+    setStatus('BINANCE BACKUP', 'warn');
+  }
+
+  try {
+    const candles = await fetchCandles(inst.sym, tf.mins, 120);
+    if (candles.length > 0) {
+      S.candles[inst.id] = candles;
+      // Only update price from candle if no WS price
+      if (!S.prices[inst.id]) {
+        S.prices[inst.id] = candles[candles.length - 1].c;
+      }
+    }
+    updateUI();
+    await refreshOI();
+  } catch(e) {
+    setStatus('❌ ERROR', 'err');
+  }
+}
+
+// ═══════════ INIT ═══════════
+renderTabs();
+renderTFBar();
+
+// Start connections — Delta India WS is PRIMARY
+connectDeltaWS();
+startXAUPoll();      // XAU via Binance REST every 5s
+// Binance WS starts only as fallback (initiated inside connectDeltaWS onclose)
+
+// Initial data fetch
+tick();
+
+// Intervals
+setInterval(tick, 60000);       // Candle refresh every 1 min
+setInterval(refreshOI, 60000);  // OI refresh every 1 min
+setInterval(() => {
+  // Periodic source check
+  const inst = fmtInst();
+  const deltaFresh = S.deltaWsLastUpdate[inst.id] && (Date.now() - S.deltaWsLastUpdate[inst.id]) < 5000;
+  if (!deltaFresh && (!binanceWs || binanceWs.readyState !== 1)) {
+    connectBinanceWS(); // ensure backup is running
+  }
+  updateUI();
+}, 5000);
+
+window.addEventListener('resize', () => {
+  const r = analyze(S.candles[S.active], S.prices[S.active]);
+  if (r) { drawPrice(r); drawRsi(r); }
+});
+</script>
+</body>
+</html>
