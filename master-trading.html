@@ -43,31 +43,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:1
 .src-dot.err{background:var(--red)}
 
 .price-area{padding:16px 14px 10px;position:relative}
-.price-main{font-size:42px;font-weight:700;letter-spacing:-1px;line-height:1}
-.price-chg{font-size:16px;font-weight:700;margin-left:10px}
+.price-main{font-size:42px;font-weight:700;letter-spacing:-1px;line-height:1;transition:all 0.3s ease}
+.price-chg{font-size:16px;font-weight:700;margin-left:10px;transition:all 0.3s ease}
 .price-chg.up{color:var(--green)}
 .price-chg.dn{color:var(--red)}
 .ohlc{display:flex;gap:14px;margin-top:8px;font-size:11px;color:var(--muted)}
 .ohlc span{color:var(--text)}
 
-.chart-wrap{position:relative;height:220px;margin:0 0 4px}
-canvas{display:block}
-.chart-overlay{position:absolute;top:6px;right:8px;font-size:9px;color:var(--muted);letter-spacing:1px}
+.chart-wrap{position:relative;height:220px;margin:0 0 4px;background:linear-gradient(to bottom,rgba(20,30,50,0.5),rgba(10,15,30,0.5));border-radius:4px;border:1px solid var(--border)}
+canvas{display:block;background:transparent}
+.chart-overlay{position:absolute;top:6px;right:8px;font-size:9px;color:var(--muted);letter-spacing:1px;background:rgba(13,20,32,0.8);padding:4px 8px;border-radius:3px}
 
-.rsi-wrap{height:60px;position:relative;margin-bottom:2px}
-.rsi-label{position:absolute;left:6px;top:4px;font-size:9px;color:var(--muted);letter-spacing:1px}
+.rsi-wrap{height:60px;position:relative;margin-bottom:2px;background:linear-gradient(to bottom,rgba(20,30,50,0.5),rgba(10,15,30,0.5));border-radius:4px;border:1px solid var(--border)}
+.rsi-label{position:absolute;left:6px;top:4px;font-size:9px;color:var(--muted);letter-spacing:1px;background:rgba(13,20,32,0.8);padding:2px 6px;border-radius:2px}
 
-.sig-card{margin:10px 12px;border-radius:8px;padding:14px 16px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.sig-txt{font-size:28px;font-weight:700;letter-spacing:3px}
-.sig-txt.BUY{color:var(--green)}
-.sig-txt.SELL{color:var(--red)}
+.volume-wrap{height:60px;position:relative;margin-bottom:2px;background:linear-gradient(to bottom,rgba(20,30,50,0.5),rgba(10,15,30,0.5));border-radius:4px;border:1px solid var(--border)}
+.volume-label{position:absolute;left:6px;top:4px;font-size:9px;color:var(--muted);letter-spacing:1px;background:rgba(13,20,32,0.8);padding:2px 6px;border-radius:2px}
+
+.buy-sell-wrap{height:80px;position:relative;margin-bottom:2px;background:linear-gradient(to bottom,rgba(20,30,50,0.5),rgba(10,15,30,0.5));border-radius:4px;border:1px solid var(--border)}
+.buy-sell-label{position:absolute;left:6px;top:4px;font-size:9px;color:var(--muted);letter-spacing:1px;background:rgba(13,20,32,0.8);padding:2px 6px;border-radius:2px}
+
+.sig-card{margin:10px 12px;border-radius:8px;padding:14px 16px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;transition:all 0.3s ease}
+.sig-txt{font-size:28px;font-weight:700;letter-spacing:3px;transition:all 0.3s ease}
+.sig-txt.BUY{color:var(--green);text-shadow:0 0 10px var(--green)}
+.sig-txt.SELL{color:var(--red);text-shadow:0 0 10px var(--red)}
 .sig-txt.HOLD{color:var(--muted)}
 .sig-meta{text-align:right;font-size:10px;color:var(--muted);line-height:1.6}
 .sig-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--muted2);overflow:hidden}
-.sig-fill{height:100%;border-radius:2px;transition:.5s}
+.sig-fill{height:100%;border-radius:2px;transition:all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
 
 .levels{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 10px}
-.lev{background:var(--card);border-radius:6px;padding:10px 12px;border-left:3px solid var(--border)}
+.lev{background:var(--card);border-radius:6px;padding:10px 12px;border-left:3px solid var(--border);transition:all 0.3s ease}
 .lev.entry{border-color:var(--blue)}
 .lev.sl{border-color:var(--red)}
 .lev.tp{border-color:var(--green)}
@@ -75,7 +81,7 @@ canvas{display:block}
 .lev.sup{border-color:var(--purple)}
 .lev.rr{border-color:var(--yellow)}
 .lev-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px}
-.lev-val{font-size:14px;font-weight:700}
+.lev-val{font-size:14px;font-weight:700;transition:all 0.3s ease}
 .lev.entry .lev-val{color:var(--blue)}
 .lev.sl .lev-val{color:var(--red)}
 .lev.tp .lev-val{color:var(--green)}
@@ -86,24 +92,24 @@ canvas{display:block}
 .oi-section{margin:4px 12px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);padding:12px}
 .oi-title{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:10px}
 .oi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.oi-item{background:var(--card2);border-radius:5px;padding:8px 10px}
+.oi-item{background:var(--card2);border-radius:5px;padding:8px 10px;transition:all 0.3s ease}
 .oi-item-label{font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:3px}
-.oi-item-val{font-size:13px;font-weight:700;color:var(--text)}
+.oi-item-val{font-size:13px;font-weight:700;color:var(--text);transition:all 0.3s ease}
 .oi-item-val.up{color:var(--green)}
 .oi-item-val.dn{color:var(--red)}
 .ls-bar-wrap{margin-top:6px}
 .ls-labels{display:flex;justify-content:space-between;font-size:9px;margin-bottom:4px}
 .ls-bar{height:8px;border-radius:4px;background:var(--muted2);overflow:hidden;display:flex}
-.ls-long{background:var(--green);transition:.5s}
-.ls-short{background:var(--red);flex:1;transition:.5s}
-.ls-badge{text-align:center;font-size:10px;font-weight:700;margin-top:6px;letter-spacing:2px}
-.ls-badge.bull{color:var(--green)}
-.ls-badge.bear{color:var(--red)}
+.ls-long{background:var(--green);transition:all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+.ls-short{background:var(--red);flex:1;transition:all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)}
+.ls-badge{text-align:center;font-size:10px;font-weight:700;margin-top:6px;letter-spacing:2px;transition:all 0.3s ease}
+.ls-badge.bull{color:var(--green);text-shadow:0 0 8px rgba(0,229,160,0.5)}
+.ls-badge.bear{color:var(--red);text-shadow:0 0 8px rgba(255,68,102,0.5)}
 .ls-badge.neu{color:var(--yellow)}
 
 .hist-section{margin:0 12px 10px;background:var(--card);border-radius:8px;border:1px solid var(--border);padding:12px}
 .hist-title{font-size:10px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
-.hist-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px}
+.hist-item{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:11px;transition:all 0.3s ease}
 .hist-item:last-child{border:none}
 .hist-sig{font-weight:700;letter-spacing:1px}
 .hist-sig.BUY{color:var(--green)}
@@ -112,8 +118,8 @@ canvas{display:block}
 
 .toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 18px;font-size:12px;font-weight:700;letter-spacing:1px;z-index:999;transition:.3s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
-.toast.green{border-color:var(--green);color:var(--green)}
-.toast.red{border-color:var(--red);color:var(--red)}
+.toast.green{border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(0,229,160,0.3)}
+.toast.red{border-color:var(--red);color:var(--red);box-shadow:0 0 10px rgba(255,68,102,0.3)}
 </style>
 </head>
 <body>
@@ -145,11 +151,22 @@ canvas{display:block}
 
 <div class="chart-wrap">
   <canvas id="priceChart"></canvas>
-  <div class="chart-overlay" id="chartLabel">PRICE</div>
+  <div class="chart-overlay" id="chartLabel">PRICE CHART</div>
 </div>
+
+<div class="volume-wrap">
+  <canvas id="volumeChart"></canvas>
+  <div class="volume-label">VOLUME</div>
+</div>
+
+<div class="buy-sell-wrap">
+  <canvas id="buySellChart"></canvas>
+  <div class="buy-sell-label">BUY/SELL PRESSURE</div>
+</div>
+
 <div class="rsi-wrap">
   <canvas id="rsiChart"></canvas>
-  <div class="rsi-label">RSI</div>
+  <div class="rsi-label">RSI (14)</div>
 </div>
 
 <div class="sig-card">
@@ -172,7 +189,7 @@ canvas{display:block}
 </div>
 
 <div class="oi-section">
-  <div class="oi-title">OPEN INTEREST</div>
+  <div class="oi-title">OPEN INTEREST & VOLUME</div>
   <div class="oi-grid">
     <div class="oi-item"><div class="oi-item-label">TOTAL OI</div><div class="oi-item-val" id="oiTotal">--</div></div>
     <div class="oi-item"><div class="oi-item-label">OI VALUE (USD)</div><div class="oi-item-val" id="oiVal">--</div></div>
@@ -221,20 +238,18 @@ const TFS = [
 
 const S = {
   active: 'BTC',
-  tf: 4,   // default 5M
+  tf: 4,
   prices: {},
   candles: {},
   tickers: {},
   sigs: {},
   hist: [],
   oiPrev: {},
-  // Price source tracking
   deltaWsReady: false,
-  deltaWsLastUpdate: {},  // {sym: timestamp}
-  
-  // 🔧 FIX: Throttle control for high-volume indicator freeze
+  deltaWsLastUpdate: {},
   lastUIUpdate: 0,
-  uiThrottle: 1500,  // Update UI max every 1.5s during high volume
+  uiThrottle: 500,  // REDUCED: More frequent updates for smooth animation
+  animationFrameId: null,
 };
 
 // ═══════════ HELPERS ═══════════
@@ -243,7 +258,10 @@ const fmt = (v, inst) => {
   const s = SYMS.find(x => x.id === inst || x === inst);
   return s ? s.fmt(v) : `$${v}`;
 };
-const fmtInst = () => SYMS.find(s => s.id === S.active);
+const fmtInst = () => {
+  const inst = SYMS.find(s => s.id === S.active);
+  return inst || SYMS[0];
+};
 
 function setStatus(txt, type='') {
   $('sdot').className = 'status-dot' + (type ? ' '+type : '');
@@ -304,8 +322,6 @@ function connectDeltaWS() {
       deltaWsRetry = 0;
       S.deltaWsReady = true;
 
-      // Subscribe to all symbols
-      const symbols = SYMS.filter(s => s.dSym).map(s => `v2/ticker:${s.sym}`);
       deltaWs.send(JSON.stringify({
         type: 'subscribe',
         payload: { channels: [{ name: 'v2/ticker', symbols: SYMS.filter(s=>s.dSym).map(s=>s.sym) }] }
@@ -320,7 +336,6 @@ function connectDeltaWS() {
         const msg = JSON.parse(e.data);
         if (!msg || msg.type !== 'v2/ticker') return;
         const d = msg;
-        // Find matching symbol
         const sym = SYMS.find(s => s.sym === d.symbol);
         if (!sym) return;
 
@@ -331,7 +346,6 @@ function connectDeltaWS() {
         S.prices[sym.id] = price;
         S.deltaWsLastUpdate[sym.id] = Date.now();
 
-        // Store ticker data
         S.tickers[sym.id] = {
           open_24h: parseFloat(d.open) || price,
           high: parseFloat(d.high) || price,
@@ -346,6 +360,8 @@ function connectDeltaWS() {
           if (el) el.textContent = sym.fmt(price);
           updatePriceChange();
           setSrcBar('✅ LIVE · DELTA INDIA WS', 'ok');
+          // Trigger chart update on price change
+          requestAnimationFrame(updateUI);
         }
         renderTabs();
 
@@ -360,11 +376,9 @@ function connectDeltaWS() {
 
     deltaWs.onclose = () => {
       S.deltaWsReady = false;
-      // Retry with backoff
       const delay = Math.min(30000, 2000 * Math.pow(1.5, deltaWsRetry++));
       setSrcBar(`⚠ DELTA WS CLOSED · RETRY IN ${Math.round(delay/1000)}s`, 'warn');
       setTimeout(connectDeltaWS, delay);
-      // Fall back to Binance while reconnecting
       connectBinanceWS();
     };
   } catch(e) {
@@ -378,7 +392,7 @@ let binanceWs = null;
 let binanceWsActive = false;
 
 function connectBinanceWS() {
-  if (binanceWs && binanceWs.readyState === 1) return; // Already connected
+  if (binanceWs && binanceWs.readyState === 1) return;
 
   try {
     const streams = SYMS.filter(s => s.bSym).map(s => `${s.bSym.toLowerCase()}@miniTicker`).join('/');
@@ -401,21 +415,19 @@ function connectBinanceWS() {
         const bncPrice = parseFloat(d.c);
         if (!bncPrice || isNaN(bncPrice)) return;
 
-        // Only use Binance if Delta WS is NOT fresh (> 5 seconds old)
         const deltaFresh = S.deltaWsLastUpdate[sym.id] && (Date.now() - S.deltaWsLastUpdate[sym.id]) < 5000;
 
         if (!deltaFresh) {
-          // Delta not fresh — use Binance
           S.prices[sym.id] = bncPrice;
           if (sym.id === S.active) {
             const el = $('price');
             if (el) el.textContent = sym.fmt(bncPrice);
             updatePriceChange();
             setSrcBar('⚡ BINANCE WS (BACKUP — DELTA OFFLINE)', 'warn');
+            requestAnimationFrame(updateUI);
           }
           renderTabs();
         }
-        // If Delta IS fresh — ignore Binance (avoids $25 gap!)
       } catch(err) {}
     };
 
@@ -425,9 +437,9 @@ function connectBinanceWS() {
 }
 
 // ═══════════ XAU — DELTA INDIA REST POLL ═══════════
-// Uses XAUTUSD (Delta's Gold RWA token) — same exchange, accurate price
+let xauPollId = null;
+
 async function fetchXAUPrice() {
-  // Try Delta India XAUTUSD first (Gold token on Delta)
   const sources = [
     () => fetch('https://cdn.india.deltaex.org/v2/tickers/XAUTUSD').then(r=>r.json()),
     () => fetch('https://cdn.india.deltaex.org/v2/tickers/XAUUSD').then(r=>r.json()),
@@ -454,13 +466,13 @@ async function fetchXAUPrice() {
         if (el) el.textContent = SYMS.find(s => s.id === 'XAU').fmt(price);
         updatePriceChange();
         setSrcBar('✅ LIVE · XAU · DELTA INDIA', 'ok');
+        requestAnimationFrame(updateUI);
       }
       renderTabs();
-      return; // success — stop trying other sources
+      return;
     } catch(e) {}
   }
 
-  // Last fallback: Metals-API via public proxy
   try {
     const resp = await fetch('https://api.frankfurter.app/latest?from=XAU&to=USD');
     const d = await resp.json();
@@ -472,16 +484,17 @@ async function fetchXAUPrice() {
         $('price').textContent = SYMS.find(s=>s.id==='XAU').fmt(price);
         updatePriceChange();
         setSrcBar('⚡ XAU · FRANKFURTER (DELAYED)', 'warn');
+        requestAnimationFrame(updateUI);
       }
       renderTabs();
     }
   } catch(e) {}
 }
 
-// Poll XAU every 5 seconds
 function startXAUPoll() {
+  if (xauPollId) clearInterval(xauPollId);
   fetchXAUPrice();
-  setInterval(fetchXAUPrice, 5000);
+  xauPollId = setInterval(fetchXAUPrice, 5000);
 }
 
 // ═══════════ PRICE CHANGE ═══════════
@@ -496,7 +509,6 @@ function updatePriceChange() {
   el.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
   el.className = 'price-chg ' + (chg >= 0 ? 'up' : 'dn');
 
-  // OHLC
   $('ph').textContent = inst.fmt(tk.high || p);
   $('pl').textContent = inst.fmt(tk.low || p);
   const vol = tk.volume || 0;
@@ -505,9 +517,7 @@ function updatePriceChange() {
 
 // ═══════════ CANDLES (REST API) ═══════════
 async function fetchCandles(sym, tfMins, limit) {
-  // Try Delta India REST first
   try {
-    const res_map = {0.5:'1m', 1:'1m', 3:'3m', 5:'5m', 15:'15m', 30:'30m', 60:'1h', 240:'4h'};
     const r_tf = tfMins <= 1 ? 1 : tfMins;
     const end = Math.floor(Date.now()/1000);
     const start = end - r_tf * 60 * limit;
@@ -529,7 +539,6 @@ async function fetchCandles(sym, tfMins, limit) {
     }
   } catch(e) {}
 
-  // Fallback: Binance
   try {
     const bSym = SYMS.find(s => s.sym === sym)?.bSym;
     if (!bSym) return [];
@@ -542,12 +551,9 @@ async function fetchCandles(sym, tfMins, limit) {
   } catch(e) { return []; }
 }
 
-// ═══════════ OI (Open Interest) - FIXED ═══════════
-// 🔧 FIX #1: Added Binance Futures API fallback for BTC/ETH/SOL
-// 🔧 FIX #2: XAU gracefully falls back to n/a (not a derivative)
+// ═══════════ OI (Open Interest) ═══════════
 async function fetchOI(inst) {
   try {
-    // Try Delta India first (works for BTC, ETH, SOL)
     const url = `https://cdn.india.deltaex.org/v2/products/${inst.sym}`;
     const resp = await fetch(url);
     const d = await resp.json();
@@ -561,24 +567,21 @@ async function fetchOI(inst) {
     }
   } catch(e) {}
 
-  // 🔧 Fallback: Binance Futures API (for BTC, ETH, SOL)
   if (inst.bSym && inst.id !== 'XAU') {
     try {
       const resp = await fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${inst.bSym}`);
       const d = await resp.json();
       if (d.openInterest && d.openInterest > 0) {
-        // Get long/short ratio from Binance Futures LS Ratio endpoint
         try {
           const lsResp = await fetch(`https://fapi.binance.com/futures/data/topLongShortPositionRatio?symbol=${inst.bSym}&period=5m&limit=1`);
           const lsData = await lsResp.json();
           const longRatio = lsData[0] ? (parseFloat(lsData[0].longShortRatio) * 100) : 50;
           return {
             oi: parseFloat(d.openInterest) || 0,
-            oi_value: 0,  // Binance doesn't provide this directly
+            oi_value: 0,
             long_ratio: Math.min(99, Math.max(1, longRatio))
           };
         } catch(e) {
-          // If LS ratio fails, use default 50%
           return {
             oi: parseFloat(d.openInterest) || 0,
             oi_value: 0,
@@ -589,7 +592,6 @@ async function fetchOI(inst) {
     } catch(e) {}
   }
 
-  // 🔧 For XAU: Return null (XAU is not a crypto derivative, no OI)
   return null;
 }
 
@@ -597,7 +599,6 @@ async function refreshOI() {
   const inst = fmtInst();
   const oi = await fetchOI(inst);
 
-  // 🔧 FIX: Handle XAU gracefully (no OI data)
   if (!oi) {
     if (inst.id === 'XAU') {
       $('oiTotal').textContent = 'N/A';
@@ -674,6 +675,23 @@ function atr(candles, period = 14) {
   return trs.slice(-period).reduce((a, b) => a + b, 0) / period;
 }
 
+function calculateBuySellPressure(candles) {
+  return candles.map(c => {
+    const bodySize = Math.abs(c.c - c.o);
+    const totalSize = c.h - c.l;
+    if (totalSize === 0) return { buy: 0, sell: 0 };
+    
+    const isUp = c.c >= c.o;
+    const volume = c.v || 0;
+    
+    if (isUp) {
+      return { buy: volume * 0.6, sell: volume * 0.4 };
+    } else {
+      return { buy: volume * 0.4, sell: volume * 0.6 };
+    }
+  });
+}
+
 function analyze(candles, price) {
   if (!candles || candles.length < 20) return null;
   const closes = candles.map(c => c.c);
@@ -682,6 +700,7 @@ function analyze(candles, price) {
   const e50 = ema(closes, 50);
   const rsiArr = rsi(closes);
   const atrVal = atr(candles);
+  const buySellPressure = calculateBuySellPressure(candles);
   const lastRsi = rsiArr[rsiArr.length - 1];
   const lastE9  = e9[e9.length - 1];
   const lastE21 = e21[e21.length - 1];
@@ -709,16 +728,20 @@ function analyze(candles, price) {
   const rew  = Math.abs(tp2 - p);
   const rr   = risk > 0 ? (rew / risk).toFixed(2) : '--';
 
-  return { sig, bull, bear, str, e9, e21, e50, rsiArr, atrVal, support, resistance, sl, tp1, tp2, tp3, rr, closes };
+  return { sig, bull, bear, str, e9, e21, e50, rsiArr, atrVal, support, resistance, sl, tp1, tp2, tp3, rr, closes, buySellPressure, candles };
 }
 
-// ═══════════ CHARTS ═══════════
+// ═══════════ CHARTS (WITH SMOOTH ANIMATION) ═══════════
 function drawPrice(result) {
   const canvas = $('priceChart');
   const wrap = canvas.parentElement;
+  if (!wrap || wrap.clientWidth === 0) return;
+  
   canvas.width = wrap.clientWidth;
   canvas.height = wrap.clientHeight;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
   const candles = S.candles[S.active];
   if (!candles || candles.length < 2) return;
   const { e9, e21, e50 } = result;
@@ -746,7 +769,7 @@ function drawPrice(result) {
     ctx.fillText(fmtInst().fmt(v), W - pad.r + 4, y + 3);
   }
 
-  // Candles (mini bars for performance)
+  // Candles (UP = GREEN, DOWN = RED)
   candles.forEach((c, i) => {
     const x = toX(i);
     const isUp = c.c >= c.o;
@@ -755,12 +778,19 @@ function drawPrice(result) {
     ctx.lineWidth = 1;
     const oy = toY(c.o), cy2 = toY(c.c);
     const hy = toY(c.h), ly = toY(c.l);
-    ctx.beginPath(); ctx.moveTo(x, hy); ctx.lineTo(x, ly); ctx.stroke();
+    
+    // Wick (HIGH-LOW line)
+    ctx.beginPath(); 
+    ctx.moveTo(x, hy); 
+    ctx.lineTo(x, ly); 
+    ctx.stroke();
+    
+    // Body (OPEN-CLOSE rectangle)
     const bh = Math.max(1, Math.abs(cy2 - oy));
     ctx.fillRect(x - barW/2 * 0.7, Math.min(oy, cy2), barW * 0.7, bh);
   });
 
-  // EMAs
+  // EMAs (smooth lines moving up/down with price)
   const drawLine = (arr, color, dash=[]) => {
     ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.setLineDash(dash);
     ctx.beginPath();
@@ -775,7 +805,6 @@ function drawPrice(result) {
   drawLine(e21, '#ffd700');
   drawLine(e50, '#b084ff', [4, 4]);
 
-  // Legend
   ctx.font = '9px Courier New'; ctx.textAlign = 'left';
   [['EMA9','#4fc3f7'],['EMA21','#ffd700'],['EMA50','#b084ff']].forEach(([l,c],i) => {
     ctx.fillStyle = c;
@@ -783,12 +812,108 @@ function drawPrice(result) {
   });
 }
 
-function drawRsi(result) {
-  const canvas = $('rsiChart');
+function drawVolume(result) {
+  const canvas = $('volumeChart');
   const wrap = canvas.parentElement;
+  if (!wrap || wrap.clientWidth === 0) return;
+  
   canvas.width = wrap.clientWidth;
   canvas.height = wrap.clientHeight;
   const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
+  const candles = S.candles[S.active];
+  if (!candles || candles.length < 2) return;
+
+  const vols = candles.map(c => c.v || 0);
+  const maxVol = Math.max(...vols) || 1;
+  const W = canvas.width, H = canvas.height;
+  const pad = { t: 4, b: 4, l: 8, r: 60 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const n = vols.length;
+  const barW = Math.max(1, cw / n);
+  const toX = i => pad.l + i * barW;
+  const toY = v => pad.t + ch - (v / maxVol) * ch;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Volume bars (colored based on candle direction)
+  candles.forEach((c, i) => {
+    const x = toX(i);
+    const vol = vols[i];
+    const isUp = c.c >= c.o;
+    ctx.fillStyle = isUp ? 'rgba(0,229,160,0.6)' : 'rgba(255,68,102,0.6)';
+    const barHeight = (vol / maxVol) * ch;
+    ctx.fillRect(x, toY(vol), barW * 0.8, barHeight);
+  });
+
+  ctx.fillStyle = '#4a6080'; ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+  ctx.fillText((maxVol/1e6).toFixed(1)+'M', W - pad.r + 4, pad.t + 10);
+}
+
+function drawBuySellPressure(result) {
+  const canvas = $('buySellChart');
+  const wrap = canvas.parentElement;
+  if (!wrap || wrap.clientWidth === 0) return;
+  
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
+  const { buySellPressure } = result;
+  if (!buySellPressure || buySellPressure.length < 2) return;
+
+  const W = canvas.width, H = canvas.height;
+  const pad = { t: 8, b: 20, l: 8, r: 60 };
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const n = buySellPressure.length;
+  const barW = Math.max(1, cw / n);
+  const toX = i => pad.l + i * barW;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const maxPressure = Math.max(...buySellPressure.map(p => Math.max(p.buy, p.sell))) || 1;
+
+  // Stacked Buy/Sell bars (HEAVY indicator)
+  buySellPressure.forEach((p, i) => {
+    const x = toX(i);
+    const buyH = (p.buy / maxPressure) * ch;
+    const sellH = (p.sell / maxPressure) * ch;
+
+    // Buy (green - bottom, moves UP when strong)
+    ctx.fillStyle = 'rgba(0,229,160,0.8)';
+    ctx.fillRect(x, pad.t + ch - buyH, barW * 0.8, buyH);
+
+    // Sell (red - top, moves DOWN when strong)
+    ctx.fillStyle = 'rgba(255,68,102,0.8)';
+    ctx.fillRect(x, pad.t + ch - buyH - sellH, barW * 0.8, sellH);
+  });
+
+  // Legend
+  ctx.font = '9px Courier New';
+  ctx.fillStyle = 'rgba(0,229,160,0.8)';
+  ctx.fillRect(pad.l, H - 16, 8, 8);
+  ctx.fillStyle = '#4a6080';
+  ctx.textAlign = 'left';
+  ctx.fillText('BUY PRESSURE', pad.l + 12, H - 9);
+
+  ctx.fillStyle = 'rgba(255,68,102,0.8)';
+  ctx.fillRect(pad.l + 110, H - 16, 8, 8);
+  ctx.fillStyle = '#4a6080';
+  ctx.fillText('SELL PRESSURE', pad.l + 122, H - 9);
+}
+
+function drawRsi(result) {
+  const canvas = $('rsiChart');
+  const wrap = canvas.parentElement;
+  if (!wrap || wrap.clientWidth === 0) return;
+  
+  canvas.width = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  
   const { rsiArr } = result;
   if (!rsiArr || rsiArr.length < 2) return;
 
@@ -802,11 +927,11 @@ function drawRsi(result) {
 
   ctx.clearRect(0, 0, W, H);
 
-  // Zones
+  // Overbought/Oversold zones
   ctx.fillStyle = 'rgba(255,68,102,0.08)'; ctx.fillRect(pad.l, pad.t, cw, (ch/100)*30);
   ctx.fillStyle = 'rgba(0,229,160,0.08)';  ctx.fillRect(pad.l, toY(70), cw, (ch/100)*30);
 
-  // Lines
+  // Reference lines
   [30, 70].forEach(v => {
     ctx.strokeStyle = '#1a2535'; ctx.lineWidth = 0.5; ctx.setLineDash([2,2]);
     ctx.beginPath(); ctx.moveTo(pad.l, toY(v)); ctx.lineTo(W - pad.r + 40, toY(v)); ctx.stroke();
@@ -815,8 +940,8 @@ function drawRsi(result) {
     ctx.fillText(v, W - pad.r + 4, toY(v) + 3);
   });
 
-  // RSI line
-  ctx.beginPath(); ctx.strokeStyle = '#ff9500'; ctx.lineWidth = 1.5;
+  // RSI line (MOVES UP/DOWN with value)
+  ctx.beginPath(); ctx.strokeStyle = '#ff9500'; ctx.lineWidth = 2;
   rsiArr.forEach((v, i) => {
     const x = toX(i) + barW/2, y = toY(v);
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
@@ -825,12 +950,11 @@ function drawRsi(result) {
 
   const last = rsiArr[rsiArr.length - 1];
   ctx.fillStyle = last > 70 ? '#ff4466' : last < 30 ? '#00e5a0' : '#ff9500';
-  ctx.font = '9px Courier New'; ctx.textAlign = 'left';
+  ctx.font = 'bold 9px Courier New'; ctx.textAlign = 'left';
   ctx.fillText('RSI ' + last.toFixed(0), W - pad.r + 4, toY(last) + 3);
 }
 
-// ═══════════ UI UPDATE - THROTTLED FOR HIGH VOLUME ═══════════
-// 🔧 FIX #3: Throttle UI updates to prevent indicator freeze during high volume
+// ═══════════ UI UPDATE - NOW WITH SMOOTH ANIMATION ═══════════
 function updateUI() {
   const now = Date.now();
   const inst = fmtInst();
@@ -848,11 +972,10 @@ function updateUI() {
   const result = candles && candles.length >= 20 ? analyze(candles, price) : null;
   if (!result) return;
 
-  // 🔧 Throttle indicator & chart drawing during high volume
+  // REDUCED throttle - charts update more frequently
   if (now - S.lastUIUpdate < S.uiThrottle) return;
   S.lastUIUpdate = now;
 
-  // Signal
   const { sig, bull, bear, str } = result;
   const sTxt = $('sigTxt');
   sTxt.textContent = sig;
@@ -862,7 +985,6 @@ function updateUI() {
   fill.style.width = str + '%';
   fill.style.background = sig === 'BUY' ? 'var(--green)' : sig === 'SELL' ? 'var(--red)' : 'var(--muted)';
 
-  // Signal history
   const prevSig = S.sigs[inst.id];
   if (prevSig !== sig && sig !== 'HOLD') {
     const now = new Date();
@@ -873,7 +995,6 @@ function updateUI() {
   }
   S.sigs[inst.id] = sig;
 
-  // Levels
   const { sl, tp1, tp2, tp3, support, resistance, rr, atrVal } = result;
   $('lvEntry').textContent = inst.fmt(price);
   $('lvSL').textContent    = inst.fmt(sl);
@@ -885,11 +1006,12 @@ function updateUI() {
   $('lvRR').textContent    = '1:' + rr;
   $('patr').textContent    = inst.fmt(atrVal);
 
-  // Charts
+  // DRAW ALL CHARTS WITH ANIMATIONS
   drawPrice(result);
+  drawVolume(result);
+  drawBuySellPressure(result);
   drawRsi(result);
 
-  // History
   const histEl = $('histList');
   if (S.hist.length === 0) {
     histEl.innerHTML = '<div style="color:var(--muted);font-size:11px">No signals yet...</div>';
@@ -909,7 +1031,6 @@ async function tick() {
   const inst = fmtInst();
   const tf = TFS[S.tf];
 
-  // Update source bar based on current state
   const deltaFresh = S.deltaWsLastUpdate[inst.id] && (Date.now() - S.deltaWsLastUpdate[inst.id]) < 5000;
   if (deltaFresh) {
     setSrcBar(`✅ LIVE · ${tf.label} · ${inst.label} · DELTA INDIA`, 'ok');
@@ -923,7 +1044,6 @@ async function tick() {
     const candles = await fetchCandles(inst.sym, tf.mins, 120);
     if (candles.length > 0) {
       S.candles[inst.id] = candles;
-      // Only update price from candle if no WS price
       if (!S.prices[inst.id]) {
         S.prices[inst.id] = candles[candles.length - 1].c;
       }
@@ -939,31 +1059,27 @@ async function tick() {
 renderTabs();
 renderTFBar();
 
-// Start connections — Delta India WS is PRIMARY
 connectDeltaWS();
-startXAUPoll();      // XAU via Binance REST every 5s
-// Binance WS starts only as fallback (initiated inside connectDeltaWS onclose)
+startXAUPoll();
 
-// Initial data fetch
 tick();
 
-// Intervals
-setInterval(tick, 60000);       // Candle refresh every 1 min
-setInterval(refreshOI, 60000);  // OI refresh every 1 min
+setInterval(tick, 60000);
+setInterval(refreshOI, 60000);
 setInterval(() => {
-  // Periodic source check & lightweight UI update (price only, no full redraw)
   const inst = fmtInst();
   const deltaFresh = S.deltaWsLastUpdate[inst.id] && (Date.now() - S.deltaWsLastUpdate[inst.id]) < 5000;
   if (!deltaFresh && (!binanceWs || binanceWs.readyState !== 1)) {
-    connectBinanceWS(); // ensure backup is running
+    connectBinanceWS();
   }
-  // Don't call full updateUI here — let throttling handle it
-  updatePriceChange();  // Only update price display
+  updatePriceChange();
 }, 5000);
 
 window.addEventListener('resize', () => {
-  const r = analyze(S.candles[S.active], S.prices[S.active]);
-  if (r) { drawPrice(r); drawRsi(r); }
+  const candles = S.candles[S.active];
+  if (!candles || candles.length < 20) return;
+  const r = analyze(candles, S.prices[S.active]);
+  if (r) { drawPrice(r); drawVolume(r); drawBuySellPressure(r); drawRsi(r); }
 });
 </script>
 </body>
